@@ -1,2 +1,3 @@
-# cfDNA_Gastrointestinal-cancer<img width="951" alt="Fig1_flow" src="https://github.com/yiping801026/cfDNA_Gastrointestinal-cancer/assets/62942998/4d0e0e7a-5006-4b73-9300-3b42d5f6ed9d">
+# cfDNA_Gastrointestinal-cancer
 
+![Fig1_flow](https://github.com/yiping801026/cfDNA_Gastrointestinal-cancer/assets/62942998/2b03b217-40ea-4a6d-9e75-0b9d4a6418f5)

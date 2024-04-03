@@ -49,6 +49,9 @@ unique(colnames(extssmatrix3))
 extssmatrix3 <- extssmatrix3[,!duplicated(colnames(extssmatrix3))]
 dim(extssmatrix3) #  93701   174
 #setdiff(pred_ex_all$V1,colnames(extssmatrix3)) # "WITT0P0015.1.TWN1"
+####################################################################################
+####################### check the result of 'modeltss_CAnonCA' #####################
+####################################################################################
 ### site number 
 site_used <- rownames(data.frame(modeltss_CAnonCA$finalModel$importance))
 matrix_tss_external <- extssmatrix3[site_used,]
@@ -64,6 +67,35 @@ dim(external_zscore_feat) #  174 300
 ### pred with the model 'modeltss_CAnonCA'
 pred_ex <- predict(modeltss_CAnonCA,newdata = external_zscore_feat,type = "prob")
 pred_ex$sample = rownames(pred_ex)
+sup1 <- read_excel("~/Desktop/XJ_succ/output/APaper/sup1.xlsx",sheet = "Sheet2")
+sup1 <- sup1[,2:6]
+colnames(sup1) <- sup1[1,]
+sup1 <- sup1[2:nrow(sup1),]
+pred_ex <- left_join(pred_ex ,sup1,by = 'sample')
+pred_ex$true = 1
+pred_ex[which(pred_ex$Canon == 'nonCA'),'true'] = 0
+auc <- roc(pred_ex$true,pred_ex$CA,type="prob",ci = TRUE) # 0.9123,0.8704-0.9542
+### plot
+roc.list_test <- list(auc)# 
+roc.list_test
+g.list <- ggroc(roc.list_test,size = 1,legacy.axes = TRUE) ### change the line size
+p <- g.list + scale_colour_manual(values = c('#369F2D'), ### change line colors",s
+                                  labels = c('Independent Validation 0.912 (0.870-0.954)'))+ ### change legend names
+  geom_segment(aes(x = 0, xend = 1, y = 0, yend = 1), color="darkgrey", linetype="dashed")+ ### add middle line
+  labs(title = 'Training Cohort',col = 'Cohort (AUC)', x='False Positive Rate',y='True Positive Rate')+ ### change legend title(col) & x,ynames 
+  ggplot2::theme(
+    panel.grid.major = element_line(colour = NA),
+    panel.background = element_rect(fill = "transparent", colour = 'black'),
+    plot.background = element_rect(fill = "transparent", colour = NA),
+    panel.grid.minor = element_blank()
+  ) 
+
+p + ggtitle("Screening Model Independent Validation") +
+  ggplot2::theme_bw() +
+  #ggplot2::ylim(-ylimn,ylimn)+
+  #ggplot2::xlim(-xlimn,xlimn)+
+  coord_fixed(ratio = 1)
+
 ####################################################################################
 ####################### check the result of 'modeltss_WC' ##########################
 ####################################################################################
@@ -85,4 +117,36 @@ pred_exWC$true = 1
 pred_exWC[which(pred_exWC$source == 'C'),'true'] = 0
 
 ### plot the ROC curve -- calculate the auc score
-combinde_auc_WC <- roc(pred_exWC$true,pred_exWC$W,type="prob") # 0.9426
+combinde_auc_WC <- roc(pred_exWC$true,pred_exWC$W,type="prob",ci = T) # 0.9426 (0.8916-0.9936 )
+### plot
+roc.list_test <- list(combinde_auc_WC)# 
+roc.list_test
+g.list <- ggroc(roc.list_test,size = 1,legacy.axes = TRUE) ### change the line size
+p <- g.list + scale_colour_manual(values = c('#369F2D'), ### change line colors",s
+                                  labels = c('Independent Validation 0.943 (0.892-0.994)'))+ ### change legend names
+  geom_segment(aes(x = 0, xend = 1, y = 0, yend = 1), color="darkgrey", linetype="dashed")+ ### add middle line
+  labs(title = 'Training Cohort',col = 'Cohort (AUC)', x='False Positive Rate',y='True Positive Rate')+ ### change legend title(col) & x,ynames 
+  ggplot2::theme(
+    panel.grid.major = element_line(colour = NA),
+    panel.background = element_rect(fill = "transparent", colour = 'black'),
+    plot.background = element_rect(fill = "transparent", colour = NA),
+    panel.grid.minor = element_blank()
+  ) 
+
+p + ggtitle("Localization Model Independent Validation") +
+  ggplot2::theme_bw() +
+  #ggplot2::ylim(-ylimn,ylimn)+
+  #ggplot2::xlim(-xlimn,xlimn)+
+  coord_fixed(ratio = 1)
+
+
+
+
+
+
+
+
+
+
+
+
